@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gmd.productividad.dao.mappers.AsignacionTrabajoMapper">
+
+    <resultMap id="asignacionTrabajoResultMap" type="AsignacionTrabajo">
+        <id property="id" column="ID_ASIGNACION"/>
+        <result property="up" column="UP"/>
+        <result property="indicadorComplejidad" column="IN_COMPLEJIDAD"/>
+        <result property="tipoProceso" column="TI_PROCESO"/>
+        <result property="tipoTarea" column="TI_TAREA"/>
+        <result property="ultimoMovimiento" column="UL_MOVIMIENTO"/>
+
+        <result property="cantidadComponente" column="CA_COMPONENTE"/>
+        <result property="cantidadComponenteUnitario" column="CA_COMPONENTE_UNITARIO"/>
+
+        <result property="fechaInicio" column="FE_INICIO"/>
+        <result property="fechaFinReal" column="FE_FIN_REAL"/>
+        <result property="fechaFinEstimada" column="FE_FIN_ESTIMADA"/>
+
+
+        <result property="horasDesarrolloReal" column="HO_DESARROLLO_REAL"/>
+        <result property="horasModeloEstadistico" column="HO_MODELO_ESTADISTICO"/>
+        <result property="horasEstimadas" column="HO_ESTIMADA"/>
+        <result property="horasBrechaProductividad" column="HO_BRECHA_PRODUCTIVIDAD"/>
+        <result property="horasEficiencia" column="HO_EFICIENCIA"/>
+        <result property="estado" column="ST_ASIGNACION"/>
+
+        <result property="observacion" column="TX_OBSERVACION"/>
+        <association property="colaborador" javaType="com.gmd.productividad.domain.Colaborador" resultMap="com.gmd.productividad.dao.mappers.ColaboradorMapper.colaboradorResultMap"></association>
+        <association property="componente" javaType="com.gmd.productividad.domain.Componente" resultMap="com.gmd.productividad.dao.mappers.ComponenteMapper.componenteResultMap"></association>
+        <association property="tecnologia" javaType="com.gmd.productividad.domain.Tecnologia" resultMap="com.gmd.productividad.dao.mappers.TecnologiaMapper.tecnologiaResultMap"></association>
+        <association property="herramienta" javaType="com.gmd.productividad.domain.Herramienta" resultMap="com.gmd.productividad.dao.mappers.HerramientaMapper.herramientaResultMap"></association>
+    </resultMap>
+
+    <select id="selectAll" resultMap="asignacionTrabajoResultMap">
+            SELECT * FROM ASIGNACION
+    </select>
+
+    <select id="selectById" resultMap="asignacionTrabajoResultMap">
+      SELECT * FROM ASIGNACION_TRABAJO WHERE ID_ASIGNACION = #{id}
+    </select>
+
+    <select id="findByColaborador" resultMap="asignacionTrabajoResultMap">
+         SELECT AST.*,T.*,CO.*,HE.*,COMP.*,LENG.*,
+         AST.FE_INICIO + AST.HO_ESTIMADA AS FE_FIN_ESTIMADA,
+        (SELECT M.FE_ACCION FROM MOVIMIENTO M WHERE M.ACCION='FINA' AND M.ID_ASIGNACION = AST.ID_ASIGNACION) AS FE_FIN_REAL,
+        (SELECT M.ACCION FROM MOVIMIENTO M INNER JOIN (SELECT max(O.id_movimiento) as id_movimiento, O.id_asignacion FROM MOVIMIENTO O where O.ST_REGISTRO='1' group by  O.id_asignacion)         MOVMAX ON MOVMAX.ID_MOVIMIENTO = M.ID_MOVIMIENTO WHERE M.ID_ASIGNACION = AST.ID_ASIGNACION) AS UL_MOVIMIENTO
+         FROM
+         ASIGNACION_TRABAJO  AST
+         INNER JOIN TECNOLOGIA T on AST.ID_TECNOLOGIA = T.ID_TECNOLOGIA
+         INNER JOIN COLABORADOR CO ON CO.ID_COLABORADOR = AST.ID_COLABORADOR
+         INNER JOIN HERRAMIENTA HE ON HE.ID_HERRAMIENTA = AST.ID_HERRAMIENTA
+         INNER JOIN COMPONENTE COMP ON COMP.ID_COMPONENTE = AST.ID_COMPONENTE
+         INNER JOIN LENGUAJE LENG ON LENG.ID_LENGUAJE = HE.ID_HERRAMIENTA
+         WHERE 1=1
+         AND AST.ST_ASIGNACION = '1'
+         AND AST.ID_COLABORADOR = #{idColaborador}
+
+ </select>
+
+    <select id="find" resultMap="asignacionTrabajoResultMap">
+        SELECT * FROM(
+        SELECT  ID_ASIGNACION, UP, IN_COMPLEJIDAD, TI_PROCESO, TI_TAREA, FE_INICIO, CA_COMPONENTE, CA_COMPONENTE_UNITARIO, HO_ESTIMADA,HO_DESARROLLO_REAL,HO_MODELO_ESTADISTICO,HO_BRECHA_PRODUCTIVIDAD,HO_EFICIENCIA, TX_OBSERVACION,ST_ASIGNACION,
+        T.ID_TECNOLOGIA,T.IN_ESTANDAR,T.NO_TECNOLOGIA,
+        CO.*,COMP.*,LENG.*,HE.*,
+        AST.FE_INICIO + AST.HO_ESTIMADA AS FE_FIN_ESTIMADA,
+        (SELECT M.FE_ACCION FROM MOVIMIENTO M WHERE M.ACCION='FINA' AND M.ID_ASIGNACION = AST.ID_ASIGNACION) AS FE_FIN_REAL,
+        (SELECT M.ACCION FROM MOVIMIENTO M INNER JOIN (SELECT max(O.id_movimiento) as id_movimiento, O.id_asignacion FROM MOVIMIENTO O where O.ST_REGISTRO='1' group by  O.id_asignacion)         MOVMAX ON MOVMAX.ID_MOVIMIENTO = M.ID_MOVIMIENTO WHERE M.ID_ASIGNACION = AST.ID_ASIGNACION) AS UL_MOVIMIENTO
+        FROM
+        ASIGNACION_TRABAJO  AST
+        INNER JOIN TECNOLOGIA T on AST.ID_TECNOLOGIA = T.ID_TECNOLOGIA
+        INNER JOIN COLABORADOR CO ON CO.ID_COLABORADOR = AST.ID_COLABORADOR
+        INNER JOIN HERRAMIENTA HE ON HE.ID_HERRAMIENTA = AST.ID_HERRAMIENTA
+        INNER JOIN COMPONENTE COMP ON COMP.ID_COMPONENTE = AST.ID_COMPONENTE
+        INNER JOIN LENGUAJE LENG ON LENG.ID_LENGUAJE = HE.ID_HERRAMIENTA
+        )
+        WHERE 1=1
+        AND ST_ASIGNACION = '1'
+        AND (UPPER(UP) like UPPER(CONCAT(#{up,jdbcType=VARCHAR}, '%')))
+        AND (#{tipoProceso,jdbcType=CHAR} IS NULL OR TI_PROCESO = #{tipoProceso,jdbcType=CHAR})
+        AND (#{fechaInicio,jdbcType=DATE} IS NULL OR FE_INICIO = #{fechaInicio,jdbcType=DATE})
+        AND (#{fechaFin,jdbcType=DATE} IS NULL OR FE_FIN_ESTIMADA = #{fechaFin,jdbcType=DATE})
+        AND (#{fechaFinReal,jdbcType=DATE} IS NULL OR FE_FIN_REAL = #{fechaFinReal,jdbcType=DATE})
+        AND  ((UPPER(NOMBRES) LIKE UPPER(#{colaborador,jdbcType=VARCHAR} || '%'))
+        OR (UPPER(AP_PATERNO) LIKE UPPER(#{colaborador,jdbcType=VARCHAR} || '%'))
+        OR (UPPER(AP_MATERNO) LIKE UPPER(#{colaborador,jdbcType=VARCHAR} || '%')))
+
+     <if test="!estados.isEmpty()">
+         AND UL_MOVIMIENTO in
+         <foreach item="item" index="index" collection="estados" open="(" separator="," close=")">
+             #{item}
+         </foreach>
+     </if>
+ </select>
+
+    <insert id="insert">
+<!-- 	 <selectKey keyProperty="id" resultType="long" order="BEFORE"> -->
+<!-- 	    SELECT SEQ_ASIGNACION_TRABAJO.NEXTVAL FROM DUAL -->
+<!-- 	 </selectKey> -->
+     INSERT INTO asignacion_trabajo (
+     ID_ASIGNACION,
+     ID_COLABORADOR,
+     ID_TECNOLOGIA,
+     ID_COMPONENTE,
+     ID_HERRAMIENTA,
+
+     UP,
+     IN_COMPLEJIDAD,
+     TI_PROCESO,
+     TI_TAREA,
+     FE_INICIO,
+
+     CA_COMPONENTE,
+     CA_COMPONENTE_UNITARIO,
+
+     HO_ESTIMADA,
+     HO_DESARROLLO_REAL,
+     HO_MODELO_ESTADISTICO,
+     HO_BRECHA_PRODUCTIVIDAD,
+     HO_EFICIENCIA,
+     ST_ASIGNACION,
+     TX_OBSERVACION) VALUES (
+     #{id,jdbcType=INTEGER},
+     #{colaborador.id,jdbcType=INTEGER}, #{tecnologia.id,jdbcType=INTEGER}, #{componente.id,jdbcType=INTEGER}, #{herramienta.id,jdbcType=INTEGER},
+     #{up,jdbcType=VARCHAR}, #{indicadorComplejidad,jdbcType=CHAR}, #{tipoProceso,jdbcType=CHAR}, #{tipoTarea,jdbcType=CHAR}, #{fechaInicio,jdbcType=DATE},
+     #{cantidadComponente,jdbcType=DOUBLE}, #{cantidadComponenteUnitario,jdbcType=DOUBLE},
+     #{horasEstimadas,jdbcType=DOUBLE}, #{horasDesarrolloReal,jdbcType=DOUBLE},  #{horasModeloEstadistico,jdbcType=DOUBLE}, #{horasBrechaProductividad,jdbcType=DOUBLE}, #{horasEficiencia,jdbcType=DOUBLE},
+     #{estado,jdbcType=CHAR}, #{observacion,jdbcType=VARCHAR})
+ </insert>
+
+    <update id="delete">
+  UPDATE ASIGNACION_TRABAJO SET ST_ASIGNACION = '0'
+  WHERE ID_ASIGNACION= #{id}
+ </update>
+
+     <update id="update">
+        UPDATE ASIGNACION_TRABAJO SET
+         ID_COLABORADOR=#{colaborador.id,jdbcType=INTEGER},
+         ID_TECNOLOGIA=#{tecnologia.id,jdbcType=INTEGER},
+         ID_COMPONENTE= #{componente.id,jdbcType=INTEGER},
+         ID_HERRAMIENTA= #{herramienta.id,jdbcType=INTEGER},
+
+         UP=#{up,jdbcType=VARCHAR},
+         IN_COMPLEJIDAD=#{indicadorComplejidad,jdbcType=CHAR},
+         TI_PROCESO=#{tipoProceso,jdbcType=CHAR},
+         TI_TAREA= #{tipoTarea,jdbcType=CHAR},
+         FE_INICIO=#{fechaInicio,jdbcType=DATE},
+
+         CA_COMPONENTE=#{cantidadComponente,jdbcType=DOUBLE},
+         CA_COMPONENTE_UNITARIO=#{cantidadComponenteUnitario,jdbcType=DOUBLE},
+
+         HO_ESTIMADA= #{horasEstimadas,jdbcType=DOUBLE},
+         HO_DESARROLLO_REAL=#{horasDesarrolloReal,jdbcType=DOUBLE},
+         HO_MODELO_ESTADISTICO= #{horasModeloEstadistico,jdbcType=DOUBLE},
+         HO_BRECHA_PRODUCTIVIDAD= #{horasBrechaProductividad,jdbcType=DOUBLE},
+         HO_EFICIENCIA=  #{horasEficiencia,jdbcType=DOUBLE},
+
+         TX_OBSERVACION=#{observacion,jdbcType=VARCHAR}
+         WHERE ID_ASIGNACION = #{id}
+
+     </update>
+
+</mapper>

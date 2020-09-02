@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition template="templates/main.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+<ui:define name="content">
+<h:form id="form">
+    <p:messages id="messages" showDetail="true" showSummary="false" closable="true" />
+<p:panel id="panel" header="Búsqueda Experiencia">
+    <h:panelGrid columns="7">
+        <h:outputLabel for="parametro" styleClass="texto" value="Tipo Doc "/>
+             <p:selectOneMenu id="parametro" value="#{consultaExperienciaActionBean.tipoDocumento}"  style="width:175px" immediate="true" >
+             <f:selectItem itemLabel="-- SELECCIONE --" />
+             <f:selectItems value="#{comboModelActionBean.listaTipoDocumento}" var="parametro"
+                                       itemLabel="#{parametro.detalle}" itemValue="#{parametro.valor}">
+             </f:selectItems>
+                 <p:ajax event="change" update="txtNumeroDoc" />
+        </p:selectOneMenu>
+        
+         <h:outputLabel for="txtNumeroDoc" styleClass="texto" value="Número: " />
+         <p:inputText id="txtNumeroDoc" styleClass="input" onkeypress="return ingresarSoloNumeros(event)"
+                      value="#{consultaExperienciaActionBean.numeroDocumento}" disabled="#{!consultaExperienciaActionBean.isDocSelected()}"/>
+
+         <h:outputLabel for="txtnombres" styleClass="texto" value="Colaborador:"/>
+         <p:inputText id="txtnombres" styleClass="input" value="#{consultaExperienciaActionBean.nombreColaborador}" onkeyup="conMayusculas(this)" onkeypress="return validarSoloLetras(event)" />
+        <h:outputLabel value="" />
+        <h:outputLabel for="lenguaje" styleClass="texto" value="Lenguaje: " />
+        <p:selectOneMenu id="lenguaje" value="#{consultaExperienciaActionBean.idLenguaje}">
+            <f:selectItem itemValue="" itemLabel="-- SELECCIONE --" />
+            <f:selectItems value="#{comboModelActionBean.listaLenguaje}" var="lenguaje"
+                           itemLabel="#{lenguaje.nombre}" itemValue="#{lenguaje.id}"/>
+            <p:ajax event="change" update="tecnologia" />
+        </p:selectOneMenu>
+        <h:outputLabel for="tecnologia" styleClass="texto" value="Tecnologia: " />
+        <p:selectOneMenu id="tecnologia" value="#{consultaExperienciaActionBean.idTecnologia}">
+            <f:selectItem itemValue="" itemLabel="-- SELECCIONE --" />
+            <f:selectItems value="#{comboModelActionBean.getListaTecnologia(consultaExperienciaActionBean.idLenguaje)}" var="tecnologia"
+                           itemLabel="#{tecnologia.nombre}" itemValue="#{tecnologia.id}"/>
+        </p:selectOneMenu>
+        <h:outputLabel for="herramienta" styleClass="texto" value="Herramienta: " />
+        <p:selectOneMenu id="herramienta" value="#{consultaExperienciaActionBean.idHerramienta}">
+            <f:selectItem itemValue="" itemLabel="-- SELECCIONE --" />
+            <f:selectItems value="#{comboModelActionBean.listaHerramienta}" var="herramienta"
+                           itemLabel="#{herramienta.nombre}" itemValue="#{herramienta.id}"/>
+        </p:selectOneMenu>
+
+
+
+          <h:panelGrid columns="3">
+                         <p:commandButton value="Buscar" id="btnBuscar"
+                         actionListener="#{consultaExperienciaActionBean.buscar}" styleClass="ui-priority-primary" update="tblExp, messages"/>
+
+            <h:commandLink title="Exportar Excel">
+            	<p:graphicImage value="static/imagenes/iconos/excel.png" />
+            	<p:dataExporter type="xls" target="tblExp" fileName="Experiencia-Colaborador" />  
+        	</h:commandLink>  
+  
+	        <h:commandLink title="Exportar Pdf">
+	        	<p:graphicImage value="static/imagenes/iconos/pdf.png" />
+	            <p:dataExporter type="pdf" target="tblExp" fileName="Experiencia-Colaborador"/>  
+	        </h:commandLink>    
+          </h:panelGrid>   
+
+
+             
+  
+    </h:panelGrid>
+
+</p:panel>
+ 
+
+		<p:dataTable id="tblExp" var="experiencia" align="center" emptyMessage="No se encontraron registros"
+                       columnClasses="columnTable" headerClass="headerTable"
+                        value="#{consultaExperienciaActionBean.experienciaList}"
+                         paginator="true" rows="12">
+
+                <p:column sortBy="#{experiencia.id}" >
+			        <f:facet name="header" >
+			           <h:outputText value="Nro" styleClass="textoCabeceraTabla"/>
+			        </f:facet>
+                    <h:outputText value="#{experiencia.id}"/>
+                </p:column>
+                <p:column sortBy="#{experiencia.colaborador.numeroDocumento}">
+                <f:facet name="header" >
+			         <h:outputText value="Nro Doc" styleClass="textoCabeceraTabla"/>
+			      </f:facet>
+                    <h:outputText value="#{experiencia.colaborador.numeroDocumento}"/>
+                </p:column>
+                <p:column sortBy="#{experiencia.colaborador.nombreCompleto}">
+                <f:facet name="header" >
+			         <h:outputText value="Nombre" styleClass="textoCabeceraTabla"/>
+			      </f:facet>
+                    <h:outputText value="#{experiencia.colaborador.nombreCompleto}"/>
+                </p:column>
+                <p:column sortBy="#{experiencia.tecnologia.lenguaje.nombre}">
+                 <f:facet name="header" >
+			          <h:outputText value="Lenguaje" styleClass="textoCabeceraTabla"/>
+			        </f:facet>
+                     <h:outputText value="#{experiencia.tecnologia.lenguaje.nombre}"/>
+                </p:column>
+            <p:column sortBy="#{experiencia.tecnologia.nombre}">
+
+                <f:facet name="header" >
+                    <h:outputText value="Tecnologia" styleClass="textoCabeceraTabla"/>
+                </f:facet>
+                <h:outputText value="#{experiencia.tecnologia.nombre}"/>
+            </p:column>
+            <p:column sortBy="#{experiencia.herramienta.nombre}">
+                  <f:facet name="header" >
+			         <h:outputText value="Herramienta" styleClass="textoCabeceraTabla"/>
+			        </f:facet>
+                   <h:outputText value="#{experiencia.herramienta.nombre}"/>
+                </p:column>
+                <p:column sortBy="#{experiencia.tiempoTotal}">
+
+                   <f:facet name="header" >
+			        <h:outputText value="Tiempo" styleClass="textoCabeceraTabla"/>
+			        </f:facet>
+			        <h:outputText value="#{experiencia.tiempoTotal}"/> mes(es)
+                </p:column>
+            </p:dataTable>     
+
+</h:form>
+</ui:define>
+</ui:composition>  

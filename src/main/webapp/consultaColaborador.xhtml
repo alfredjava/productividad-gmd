@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition template="templates/main.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+<ui:define name="content">
+<h:form id="formConsulta">
+<p:messages id="messages" showDetail="true" showSummary="false" closable="true" />
+<p:panel id="panelBusquedaColaborador" header="Búsqueda Colaborador">
+    <h:panelGrid columns="7">
+        <h:outputLabel for="parametro" styleClass="texto" value="Tipo Doc "/>
+             <p:selectOneMenu id="parametro" value="#{consultaColaboradorActionBean.colaborador.tipoDocumento}"  style="width:175px" immediate="true" >
+             <f:selectItem itemLabel="-- SELECCIONE --" itemValue="0" />
+             <f:selectItems value="#{comboModelActionBean.listaTipoDocumento}" var="parametro"
+                                       itemLabel="#{parametro.detalle}" itemValue="#{parametro.valor}">
+             </f:selectItems>
+                 <p:ajax event="change" update="txtNumeroDoc" />
+        </p:selectOneMenu>
+        
+         <h:outputLabel for="txtNumeroDoc" styleClass="texto" value="Número: " />
+         <p:inputText id="txtNumeroDoc" styleClass="input" onkeypress="return ingresarSoloNumeros(event)"
+                      value="#{consultaColaboradorActionBean.colaborador.numeroDocumento}" disabled="#{!consultaColaboradorActionBean.isDocSelected()}"/>
+
+         <h:outputLabel for="txtnombres" styleClass="texto" value="Colaborador:"/>
+         <p:inputText id="txtnombres" styleClass="input" value="#{consultaColaboradorActionBean.colaborador.nombres}" onkeyup="conMayusculas(this)" onkeypress="return validarSoloLetras(event)" />
+        
+
+
+          <h:panelGrid columns="3">
+                         <p:commandButton value="Buscar" id="btnBuscar" styleClass="ui-priority-primary" update="tblConsultaColaborador, messages" actionListener="#{consultaColaboradorActionBean.buscarColaboradores()}" />
+                        <p:commandButton action="index.jsf" value="Registrar Colaborador"  rendered="#{request.isUserInRole('ROL_SUPERVISOR')}" ajax="false"/>
+                         
+                                                  
+          </h:panelGrid>   
+
+
+             
+  
+    </h:panelGrid>
+
+</p:panel>
+
+    <p:dataTable id="tblConsultaColaborador" var="colaborador" emptyMessage="No se encontraron registros" 
+                 value="#{consultaColaboradorActionBean.listColaborador}"
+                 paginator="true" rows="10"
+                 columnClasses="columnTable" headerClass="headerTable">
+        <p:column headerText="Nombres" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{colaborador.nombres}"/>
+        </p:column>
+        <p:column headerText="Apellido Paterno" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{colaborador.apellidoPaterno}"/>
+        </p:column>
+        <p:column headerText="Apellido Materno" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{colaborador.apellidoMaterno}"/>
+        </p:column>
+        <p:column headerText="Tipo Documento" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{colaborador.tipoDocumento == 49?'DNI':'CARNET EXTRANJERIA'}"/>
+        </p:column>
+        <p:column headerText="Nro Documento" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{colaborador.numeroDocumento}"/>
+        </p:column>
+		 <p:column headerText="Asignar Tarea"  style="width:120px;text-align: center;height:19px;" >
+            <p:commandButton value="Asignar Tarea" onclick="dlgTrabajo.show()"  update=":formTrabajo:panelTrabajo,:formTrabajo:tblAsignacionColaborador" 
+                actionListener="#{registrarAsignacionActionBean.cargarAsignaciones(colaborador.id)}"  action="#{registrarColaboradorActionBean.colaborador.setId(colaborador.id)}"
+            title="Asignar Tarea"/>
+		</p:column>
+        
+    </p:dataTable>
+
+</h:form>
+<ui:include src="utils/registrarAsignacion.xhtml"></ui:include>
+</ui:define>
+</ui:composition>  

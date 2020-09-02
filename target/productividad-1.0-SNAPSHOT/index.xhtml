@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition template="templates/main.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content" >
+        <h:form id="form">
+            <!--INICIO Formulario de busqueda del colaborador-->
+            <p:panel id="panel" header="Datos del Colaborador" ajaxRendered="true" >
+                <p:messages id="messages" showDetail="true" closable="true" showSummary="false" />
+                <h:panelGrid columns="5" styleClass="ui-panel-titlebar" style="margin-bottom:10px"  >
+                	<h:outputLabel for="parametro" styleClass="texto" value="Tipo Doc *"/>
+                    <p:selectOneMenu id="parametro" value="#{registrarColaboradorActionBean.colaborador.tipoDocumento}" styleClass="combo" immediate="true"  disabled="#{registrarColaboradorActionBean.modoLectura}" >
+                        <f:selectItems value="#{comboModelActionBean.listaTipoDocumento}" var="parametro"
+                                       itemLabel="#{parametro.detalle}" itemValue="#{parametro.valor}"/>
+                    </p:selectOneMenu>
+                    
+                    
+                    <h:outputLabel for="txtNumeroDoc" styleClass="texto" value="Número: *"/>
+                    <p:inputText id="txtNumeroDoc" styleClass="input"
+                                 value="#{registrarColaboradorActionBean.colaborador.numeroDocumento}" required="true" requiredMessage="Ingrese numero documento"
+                                 label="Número Doc" disabled="#{registrarColaboradorActionBean.modoLectura}"
+                                 onkeypress="return ingresarSoloNumeros(event)" maxlength="16"/>
+
+                  
+                    
+					 <p:commandButton value="Buscar" id="btnBuscar" styleClass="ui-priority-primary" 
+					 actionListener="#{registrarColaboradorActionBean.buscar}"  
+					 update="panel :panelbotones, :formAddColaborador:panelGridAddCol, :formAddColaborador:messages, panel"  />
+                                    
+                                     
+                                     
+                    
+                    <h:outputLabel for="txtNombreCompleto" styleClass="texto" value="Nombres Completos"/>
+                    <p:inputText id="txtNombreCompleto" styleClass="input" maxlength="60" style="width:150px;" readonly="true"
+                                 value="#{registrarColaboradorActionBean.colaborador.nombreCompleto}"
+                                 label="Nombres Completos"/>
+                     </h:panelGrid>
+                
+                    
+            <!--FIN del Formulario de busqueda del colaborador-->
+					
+                    <h:panelGrid columns="4" style="margin-bottom:10px" styleClass="ui-panel-titlebar" id="panelGridProyecto" rendered="#{registrarColaboradorActionBean.modoLectura}">
+                        <h:outputLabel for="proyecto" styleClass="texto" value="Proyecto:" />
+                        <p:selectOneMenu id="proyecto" value="#{registrarActividadColaboradorActionBean.actividadColaborador.proyecto.id}"
+                                         immediate="true" style="width:165px;" required="true" requiredMessage="seleccione un Proyecto">
+                            <f:selectItem itemValue="" itemLabel="-- SELECCIONE --" />
+                            <f:selectItems value="#{comboModelActionBean.listaProyecto}" var="proyecto"
+                                           itemLabel="#{proyecto.nombre}" itemValue="#{proyecto.id}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="tipo" styleClass="texto" value="Tipo de Actividad:" />
+                        <p:selectOneMenu id="tipo" value="#{registrarActividadColaboradorActionBean.actividadColaborador.tipoActividad}" styleClass="combo" style="width:165px;"
+                                         immediate="true" required="true" requiredMessage="Seleccione una Actividad" >
+                            <f:selectItem itemValue="" itemLabel="-- SELECCIONE --" />
+                            <f:selectItems value="#{comboModelActionBean.listaTipoActividad}" var="tipo"
+                                           itemLabel="#{tipo.detalle}" itemValue="#{tipo.valor}"/>
+                        </p:selectOneMenu>
+
+                        <h:outputLabel for="fechaIni" styleClass="texto" value="Fecha Inicio:" />
+                        <p:calendar value="#{registrarActividadColaboradorActionBean.actividadColaborador.fechaInicio}" id="fechaIni" inputSize="10" required="true" requiredMessage="Ingrese fecha inicio"
+                        inputClass="calendar" datePattern="dd/MM/yyyy" maxdate="#{registrarActividadColaboradorActionBean.actividadColaborador.fechaFin}">
+                            <p:ajax event="dateSelect" update="fechaFin" />
+                        </p:calendar>
+                        <h:outputLabel for="fechaFin" styleClass="texto" value="Fecha Fin:" />
+                        <p:calendar value="#{registrarActividadColaboradorActionBean.actividadColaborador.fechaFin}" id="fechaFin" inputSize="10" required="true" requiredMessage="Ingrese Fecha Fin"
+                        inputClass="calendar" datePattern="dd/MM/yyyy" mindate="#{registrarActividadColaboradorActionBean.actividadColaborador.fechaInicio}">
+                            <p:ajax event="dateSelect" update="fechaIni" />
+                        </p:calendar>
+             			
+             			
+                    </h:panelGrid>
+                   
+                    <p:commandButton id="btnGrabar" value="Grabar" update="panel :form:messages" rendered="#{registrarColaboradorActionBean.modoLectura}"
+								actionListener="#{registrarActividadColaboradorActionBean.guardarActColaborador}"/>
+                    <p:commandButton id="btnRegistraEx" value="Registrar Experiencia"
+                                     rendered="#{registrarColaboradorActionBean.modoLectura}"
+                                     ajaxSingle="true" actionListener="#{registrarExperienciaColaboradorActionBean.cargarExperiencia(registrarColaboradorActionBean.colaborador.id)}"
+                                     oncomplete="dlgExp.show()"  update=":formExperiencia:tblExp, :formExperiencia:panelExperiencia"/>
+                    <p:commandButton  id="btnAsignar" value="Asignar Tarea" onclick="dlgTrabajo.show()"  update=":formTrabajo:panelTrabajo,:formTrabajo:tblAsignacionColaborador" actionListener="#{registrarAsignacionActionBean.cargarAsignaciones(registrarColaboradorActionBean.colaborador.id)}" rendered="#{registrarColaboradorActionBean.modoLectura}"/>
+                    <p:commandButton id="btnCancelar" value="Cancelar" update="panel, messages, :panelbotones" rendered="#{registrarColaboradorActionBean.modoLectura || registrarColaboradorActionBean.notFound}"
+                                     actionListener="#{registrarColaboradorActionBean.clean()}"
+                                     process="@this"/>
+            </p:panel>
+
+        </h:form>
+		  <h:panelGrid columns="4" style="margin-bottom:10px" styleClass="ui-panel-titlebar" id="panelbotones">
+
+
+		  </h:panelGrid>
+
+
+
+      
+            <!--FIN Botones del formulario-->
+        
+            <!--INICIO DIALOGS-->
+			<ui:include src="utils/registrarColaborador.xhtml"></ui:include>
+			<ui:include src="utils/registrarAsignacion.xhtml"></ui:include>
+			<ui:include src="utils/registrarExperiencia.xhtml"></ui:include>
+            <!--FIN DIALOGS-->        
+    </ui:define>
+
+</ui:composition>

@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition template="templates/main.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+<ui:define name="content">
+<h:form id="form">
+<p:panel id="panel" header="Búsqueda Asignación de Trabajo">
+    <h:panelGrid columns="6">
+
+        <h:outputLabel for="txtUp" value="Up:"/>
+        <p:inputText id="txtUp" value="#{asigTrabajoActionBean.asignacionTrabajo.up}"/>
+
+        <h:outputLabel for="txtColaborador" value="Colaborador:"/>
+        <p:inputText id="txtColaborador" value="#{asigTrabajoActionBean.nombre}"/>
+
+        <h:outputLabel for="fechaIni" value="F. Inicio:"/>
+        <p:calendar id="fechaIni" inputClass="calendar130" value="#{asigTrabajoActionBean.asignacionTrabajo.fechaInicio}" />
+
+
+        <h:outputLabel for="fechaFinEst" value="F. Fin Estimado:"/>
+        <p:calendar value="#{asigTrabajoActionBean.fechaFin}" id="fechaFinEst"/>
+
+        <h:outputLabel for="cmbTipoProc" value="Tipo Proceso:"/>
+        <p:selectOneMenu value="#{asigTrabajoActionBean.asignacionTrabajo.tipoProceso}" id="cmbTipoProc" style="width:165px;">
+            <f:selectItem itemLabel="-- Proceso --"/>
+            <f:selectItems value="#{comboModelActionBean.listaTipoProceso}" var="tipo"
+                           itemLabel="#{tipo.detalle}" itemValue="#{tipo.valor}"/>
+        </p:selectOneMenu>
+        <h:outputText value=" "/>
+        <h:outputText value=" "/>
+        <h:outputLabel for="fechaReal" value="F. Real:"/>
+        <p:calendar value="#{asigTrabajoActionBean.asignacionTrabajo.fechaFinReal}" id="fechaReal"/>
+
+        <p:commandButton value="Buscar" id="btnBuscar"
+                         actionListener="#{asigTrabajoActionBean.buscar}" styleClass="ui-priority-primary" update="tblAsignacionTrabajo"/>
+    </h:panelGrid>
+</p:panel>
+
+
+    <p:dataTable id="tblAsignacionTrabajo" var="asignacion" emptyMessage="No se encontraron registros"
+                 value="#{asigTrabajoActionBean.asignacionTrabajoList}"
+                 paginator="true" rows="5"
+                 columnClasses="columnTable" headerClass="headerTable">
+        <p:column headerText="Nro" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.id}"/>
+        </p:column>
+
+        <p:column headerText="Colaborador" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.colaborador.nombres} #{asignacion.colaborador.apellidoPaterno} #{asignacion.colaborador.apellidoMaterno}"/>
+        </p:column>
+        <p:column headerText="Lenguaje" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.tecnologia.lenguaje.nombre}"/>
+        </p:column>
+
+        <p:column headerText="Herramienta" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.herramienta.nombre}"/>
+        </p:column>
+
+        <p:column headerText="Tecnologia" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.tecnologia.nombre}"/>
+        </p:column>
+        <p:column headerText="Componente" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.componente.nombre}"/>
+        </p:column>
+        <p:column headerText="Complejidad" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{parametroService.getIndicadorComplejidad(asignacion.indicadorComplejidad).detalle}"/>
+        </p:column>
+        <p:column headerText="Tipo Proceso" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{parametroService.getTipoProceso(asignacion.tipoProceso).detalle}"/>
+        </p:column>
+        <p:column headerText="Tipo Tarea" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{parametroService.getTipoTarea(asignacion.tipoTarea).detalle}"/>
+        </p:column>
+<!--        <p:column headerText="Estado" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{parametroService.getEstadoConstruccion(asignacion.estadoConstruccion).detalle}"/>
+        </p:column>-->
+        <p:column headerText="F. Inicio" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.fechaInicio}">
+            <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="F. Fin Estimada" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.fechaFinEstimada}">
+            <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="F. Real" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.fechaFinReal}">
+            <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+            </h:outputText>
+        </p:column>
+    </p:dataTable>
+
+</h:form>
+</ui:define>
+</ui:composition>  

@@ -1,0 +1,53 @@
+@CHARSET "ISO-8859-1";
+.ui-widget {
+	font-size: 0.9em !important;
+}
+
+.texto{
+	text-align: center;
+	
+}
+
+.ui-inputfield {
+	width: 165px !important	;
+}
+
+.ui-panel .ui-panel-titlebar td{
+	text-align: center !important;
+	width: 100px !important;
+}
+
+.ui-dialog.ui-widget-content .ui-dialog-title {
+	font-size: 14px !important;
+}
+
+.ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+	color: #0088cc !important;
+}
+
+.ui-state-active .ui-icon {
+background-image: url("/productividad/javax.faces.resource/images/ui-icons_217bc0_256x240.png.jsf?ln=primefaces-redmond") !important;
+}
+
+.ui-widget-header {
+border: 0px solid #4297d7 !important;
+}
+
+
+.ui-datatable th div.ui-dt-c, .ui-datatable .ui-datatable-data td div.ui-dt-c, .ui-datatable .ui-datatable-data-empty td div.ui-dt-c, .ui-datatable tfoot td div.ui-dt-c,ui-paginator{
+    padding: 0 5px;
+    font-size: 10px;
+}
+.estadosSelect {
+    height: 100px;
+    width: 200px!important;
+}
+
+.ui-priority-primary, .ui-widget-content .ui-priority-primary
+/*, .ui-widget-header .ui-priority-primary*/ {
+
+	width: 90px!important;
+}
+
+
+

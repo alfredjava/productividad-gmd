@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gmd.productividad.dao.mappers.TecnologiaMapper">
+
+    <resultMap id="tecnologiaResultMap" type="Tecnologia">
+		<id property="id" column="ID_TECNOLOGIA" />
+        <result property="indicadorEstandar" column="IN_ESTANDAR" />
+        <result property="nombre" column="NO_TECNOLOGIA" />
+        <association property="lenguaje" javaType="com.gmd.productividad.domain.Lenguaje" resultMap="com.gmd.productividad.dao.mappers.LenguajeMapper.lenguajeResultMap"></association>
+	</resultMap>
+    <select id="selectAll" resultMap="tecnologiaResultMap">
+        <![CDATA[
+            SELECT * FROM TECNOLOGIA ORDER BY NO_TECNOLOGIA ASC
+        ]]>
+    </select>
+    <select id="findByLenguaje" resultMap="tecnologiaResultMap">
+            SELECT * FROM TECNOLOGIA WHERE ID_LENGUAJE= #{ID_LENGUAJE} ORDER BY NO_TECNOLOGIA ASC
+    </select>
+    <!-- <select id="selectById" resultMap="actividadColaboradorResultMap">
+        <![CDATA[
+            SELECT * FROM ACTIVIDAD_COLABORADOR WHERE id = ${hash}{id}
+        ]]>
+    </select>
+
+    <update id="update">
+        <![CDATA[
+            UPDATE ACTIVIDAD_COLABORADOR SET email = ${hash}{email}, password_hash = ${hash}{passwordHash} WHERE id = ${hash}{id}
+        ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+            DELETE FROM ACTIVIDAD_COLABORADOR WHERE id = ${hash}{id}
+        ]]>
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+            INSERT INTO ACTIVIDAD_COLABORADOR (ID_ACTV_COLA, ID_COLABORADOR, ID_PROYECTO, TI_ACTIVIDAD_FE_INICIO, FE_FIN,TO_TIEMPO) VALUES (${hash}{email}, ${hash}{passwordHash})
+        ]]>
+    </insert>-->
+
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gmd.productividad.dao.mappers.TecnologiaComponenteMapper">
+
+
+	<resultMap id="tecnologiaComponenteResultMap" type="TecnologiaComponente">
+		<id property="id" column="ID_TECN_COMP" />
+		<result property="tiempoTotal" column="TO_TIEMPO" />
+        <association property="colaborador" javaType="com.gmd.productividad.domain.Colaborador" resultMap="com.gmd.productividad.dao.mappers.ColaboradorMapper.colaboradorResultMap"></association>
+        <association property="tecnologia" javaType="com.gmd.productividad.domain.Tecnologia" resultMap="com.gmd.productividad.dao.mappers.TecnologiaMapper.tecnologiaResultMap"></association>
+        <association property="herramienta" javaType="com.gmd.productividad.domain.Herramienta" resultMap="com.gmd.productividad.dao.mappers.HerramientaMapper.herramientaResultMap"></association>
+	</resultMap>
+
+
+    <select id="findByColaborador" resultMap="tecnologiaComponenteResultMap">
+            SELECT TC.ID_TECN_COMP, TC.TO_TIEMPO, H.*,T.*,L.*,C.*
+			FROM TECNOLOGIA_COMPONENTE TC
+			INNER JOIN HERRAMIENTA H ON H.ID_HERRAMIENTA=TC.ID_HERRAMIENTA
+			INNER JOIN TECNOLOGIA T ON T.ID_TECNOLOGIA=TC.ID_TECNOLOGIA
+			INNER JOIN LENGUAJE L ON L.ID_LENGUAJE=T.ID_LENGUAJE
+			INNER JOIN COLABORADOR C ON C.ID_COLABORADOR=TC.ID_COLABORADOR
+			WHERE TC.ID_COLABORADOR = #{idColaborador}
+    </select>
+
+<select id="find" resultMap="tecnologiaComponenteResultMap">
+      SELECT TC.ID_TECN_COMP, TC.TO_TIEMPO, H.*,T.*,L.*,C.*
+			FROM tecnologia_componente TC
+			INNER JOIN HERRAMIENTA H
+			ON H.ID_HERRAMIENTA=TC.ID_HERRAMIENTA
+			INNER JOIN TECNOLOGIA T
+			ON T.ID_TECNOLOGIA=TC.ID_TECNOLOGIA
+			INNER JOIN LENGUAJE L			
+			ON L.ID_LENGUAJE=T.ID_LENGUAJE 
+			INNER JOIN COLABORADOR C
+			ON C.ID_COLABORADOR=TC.ID_COLABORADOR  
+	      WHERE 1=1
+	      AND (#{tipoDocumento,jdbcType=CHAR} IS NULL OR C.TI_DOCUMENTO=#{tipoDocumento,jdbcType=CHAR})
+	      AND (#{numeroDocumento,jdbcType=VARCHAR} IS NULL OR C.NU_DOCUMENTO=#{numeroDocumento,jdbcType=VARCHAR} )
+
+	      AND (#{idLenguaje,jdbcType=INTEGER} = 0 OR T.ID_LENGUAJE = #{idLenguaje,jdbcType=INTEGER} )
+	      AND (#{idTecnologia,jdbcType=INTEGER} = 0 OR TC.ID_TECNOLOGIA = #{idTecnologia,jdbcType=INTEGER} )
+	      AND (#{idHerramienta,jdbcType=INTEGER} = 0 OR TC.ID_HERRAMIENTA = #{idHerramienta,jdbcType=INTEGER} )
+
+	      AND ((UPPER(C.NOMBRES) LIKE UPPER(#{colaborador,jdbcType=VARCHAR} || '%'))
+          OR   (UPPER(C.AP_PATERNO) LIKE UPPER(#{colaborador,jdbcType=VARCHAR} || '%'))
+          OR   (UPPER(C.AP_MATERNO) LIKE UPPER(#{colaborador,jdbcType=VARCHAR} || '%')))
+
+	      ORDER BY  C.AP_PATERNO,C.AP_MATERNO,C.NOMBRES ASC
+    </select>
+    <insert id="insert" >
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_TECNOLOGIA_COMPONENTE.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO TECNOLOGIA_COMPONENTE
+        	(ID_TECN_COMP,
+         	ID_TECNOLOGIA,
+            ID_COLABORADOR,
+            ID_HERRAMIENTA,
+            TO_TIEMPO)
+      		VALUES
+        	(#{id},
+        	 #{tecnologia.id}, 
+        	 #{colaborador.id},
+			 #{herramienta.id}, 
+			 #{tiempoTotal})
+      
+    </insert>
+	<delete id="delete">
+	      DELETE FROM tecnologia_componente WHERE id_tecn_comp = #{idExperiencia}
+	</delete>
+
+    <!--
+
+    <update id="update">
+        <![CDATA[
+            UPDATE ACTIVIDAD_COLABORADOR SET email = ${hash}{email}, password_hash = ${hash}{passwordHash} WHERE id = ${hash}{id}
+        ]]>
+    </update>
+
+    -->
+
+</mapper>

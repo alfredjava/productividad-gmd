@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+ 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+ 
+  <h:head>
+  	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+	<meta name="GENERATOR" content="IBM Software Development Platform"/>
+	<meta http-equiv="content-language" content="es" />
+	<meta name="lang" content="es" />
+	<meta http-equiv="Content-Style-Type" content="text/css"/>
+	<meta http-equiv="Cache-Control" content="no-cache"/>	
+	<meta http-equiv="Cache-Control" content="no-store"/>	
+	<meta http-equiv="Cache-Control" content="must-revalidate"/>
+	<meta http-equiv="Pragma" content="no-cache"/>
+	<meta http-equiv="Expires" content="0"/>
+		
+    <title>.:: GMD :: Sistema de Control de Productividad ::.</title>
+    
+	 <script type="text/javascript">  
+	    function handleLoginRequest(xhr, status, args) {  
+	        if(args.validationFailed) {  
+	            jQuery('#dialog').effect("shake", { times:3 }, 100);  
+	        } else {  
+	            dlg.hide();  
+	        }  
+	    }  
+	</script>
+	<script type="text/javascript"
+	src="${request.contextPath}/static/script/util.js"></script> 
+
+   </h:head>
+   <h:body onload="dlg.show()">
+   <p:growl id="growl" showDetail="true" life="3000" />
+
+	<p:dialog id="dialog" header="Login" widgetVar="dlg">
+        <p:messages id="messages" showDetail="true" closable="true" showSummary="false" />
+	    <h:form>
+
+	        <h:panelGrid columns="2" cellpadding="5">  
+	            <h:outputLabel for="username" value="Username:" />  
+	            <p:inputText value="#{loginActionBean.username}" onkeypress="return validarSoloLetraNumero(event)"  
+	                    id="username" required="true" label="username" />  
+	              
+	            <h:outputLabel for="password" value="Password:" />  
+	            <h:inputSecret value="#{loginActionBean.password}"   
+	                    id="password" required="true" label="password" />  
+	              
+	            <f:facet name="footer">  
+	                <p:commandButton id="loginButton" value="Ingresar" update=":messages"
+	                    actionListener="#{loginActionBean.login}"/>
+	            </f:facet>  
+	        </h:panelGrid>  
+	          
+	    </h:form>  
+	</p:dialog>  
+   
+   </h:body>
+</html>

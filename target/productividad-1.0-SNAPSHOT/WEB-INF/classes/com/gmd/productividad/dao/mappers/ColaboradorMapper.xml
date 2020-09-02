@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gmd.productividad.dao.mappers.ColaboradorMapper">
+
+	<resultMap id="colaboradorResultMap" type="Colaborador">
+		<id property="id" column="ID_COLABORADOR" />
+		<result property="apellidoPaterno" column="AP_PATERNO" />
+		<result property="apellidoMaterno" column="AP_MATERNO" />
+		<result property="nombres" column="NOMBRES" />
+		<result property="rol" column="ROL" />
+		<result property="tipoDocumento" column="TI_DOCUMENTO" />
+		<result property="numeroDocumento" column="NU_DOCUMENTO" />
+		<result property="usuario" column="USUARIO" />
+	</resultMap>
+
+    <select id="find" resultMap="colaboradorResultMap">
+        SELECT * FROM COLABORADOR WHERE NU_DOCUMENTO = #{numeroDocumento, jdbcType=CHAR}
+        AND TI_DOCUMENTO  = #{tipoDocumento,jdbcType=VARCHAR}
+    </select>
+    
+    <select id="selectAll" resultMap="colaboradorResultMap">
+        SELECT * FROM COLABORADOR 
+    </select>
+    
+    <select id="findByDocAndName" resultMap="colaboradorResultMap">
+        SELECT * FROM COLABORADOR C
+        WHERE 1 = 1
+        <choose>
+        	<when test="tipoDocumento != '0'">
+        		AND  C.TI_DOCUMENTO=#{tipoDocumento,jdbcType=CHAR} 
+        	</when>
+        </choose>
+        <choose>
+        	<when test="numeroDocumento != null and numeroDocumento != ''">
+        		AND  C.NU_DOCUMENTO=#{numeroDocumento,jdbcType=CHAR}
+        	</when>
+        </choose>
+            AND (
+        		(UPPER(C.NOMBRES)  LIKE  '%' || UPPER(#{nombres,jdbcType=VARCHAR} || '%'))
+          OR   (UPPER(C.AP_PATERNO) LIKE  '%' || UPPER(#{nombres,jdbcType=VARCHAR} || '%'))
+          OR   (UPPER(C.AP_MATERNO) LIKE  '%' || UPPER(#{nombres,jdbcType=VARCHAR} || '%')))
+    
+    </select>
+    
+    <select id="findByUsername" resultMap="colaboradorResultMap">
+        SELECT * FROM COLABORADOR WHERE UPPER(USUARIO) = UPPER(#{usuario, jdbcType=VARCHAR})
+    </select>
+
+    <insert id="insert" >
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_COLABORADOR.NEXTVAL FROM DUAL
+        </selectKey>
+
+        INSERT INTO COLABORADOR (
+            ID_COLABORADOR,
+            AP_PATERNO,
+            AP_MATERNO,
+            NOMBRES,
+            ROL,
+            TI_DOCUMENTO,
+            NU_DOCUMENTO,
+            USUARIO,
+            PASSWORD
+        )
+        VALUES (
+          #{id,jdbcType=INTEGER},
+          #{apellidoPaterno,jdbcType=VARCHAR},
+          #{apellidoMaterno,jdbcType=VARCHAR},
+          #{nombres,jdbcType=VARCHAR},
+          #{rol,jdbcType=VARCHAR},
+          #{tipoDocumento,jdbcType=VARCHAR},
+          #{numeroDocumento,jdbcType=VARCHAR},
+          #{usuario,jdbcType=VARCHAR},
+          #{password,jdbcType=VARCHAR}
+        )
+    </insert>
+
+
+
+
+
+
+    <!--<select id="selectById" resultMap="actividadColaboradorResultMap">
+        <![CDATA[
+            SELECT * FROM ACTIVIDAD_COLABORADOR WHERE id = ${hash}{id}
+        ]]>
+    </select>
+
+    <update id="update">
+        <![CDATA[
+            UPDATE ACTIVIDAD_COLABORADOR SET email = ${hash}{email}, password_hash = ${hash}{passwordHash} WHERE id = ${hash}{id}
+        ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+            DELETE FROM ACTIVIDAD_COLABORADOR WHERE id = ${hash}{id}
+        ]]>
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+            INSERT INTO ACTIVIDAD_COLABORADOR (ID_ACTV_COLA, ID_COLABORADOR, ID_PROYECTO, TI_ACTIVIDAD_FE_INICIO, FE_FIN,TO_TIEMPO) VALUES (${hash}{email}, ${hash}{passwordHash})
+        ]]>
+    </insert>-->
+
+</mapper>

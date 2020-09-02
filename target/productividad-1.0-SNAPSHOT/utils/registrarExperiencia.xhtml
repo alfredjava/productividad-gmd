@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog  widgetVar="dlgExp" resizable="false" header="Registrar Experiencia" modal="true" appendToBody="true">
+        <h:form id="formExperiencia">
+            <p:messages id="messages" showDetail="true" showSummary="false" autoUpdate="true"  closable="true"  />
+            <h:panelGrid id="panelExperiencia" columns="5" styleClass="ui-panel-titlebar" style="margin-bottom:10px">
+
+				<h:outputText value="Lenguaje(*)" styleClass="texto"/>
+                <h:outputText value="Tecnología(*)" styleClass="texto"/>
+                <h:outputText value="Herramienta(*)" styleClass="texto"/>
+                 <h:outputText value=" "/>
+                <h:outputText value=" "/>
+
+                <p:selectOneListbox id="lenguaje" value="#{registrarExperienciaColaboradorActionBean.idLenguaje}"
+                                    style="height:200px;" required="true" requiredMessage="seleccione un lenguaje">
+                    <f:selectItems value="#{comboModelActionBean.listaLenguaje}" var="lenguaje"
+                                   itemLabel="#{lenguaje.nombre}" itemValue="#{lenguaje.id}"/>
+                    <p:ajax event="change" update="tecnologia" />
+                </p:selectOneListbox>
+
+
+
+                <p:selectOneListbox id="tecnologia" value="#{registrarExperienciaColaboradorActionBean.tecnologiaComponente.tecnologia.id}"
+                                    style="height:200px;" required="true" requiredMessage="seleccione una tecnologia">
+                    <f:selectItems value="#{comboModelActionBean.getListaTecnologia(registrarExperienciaColaboradorActionBean.idLenguaje)}" var="tecnologia"
+                                   itemLabel="#{tecnologia.nombre}" itemValue="#{tecnologia.id}"/>
+                </p:selectOneListbox>
+
+                <p:selectOneListbox id="herramienta" value="#{registrarExperienciaColaboradorActionBean.tecnologiaComponente.herramienta.id}"
+                                    style="height:200px;" required="true" requiredMessage="seleccione una herramienta">
+                    <f:selectItems value="#{comboModelActionBean.listaHerramienta}" var="herramienta"
+                                   itemLabel="#{herramienta.nombre}" itemValue="#{herramienta.id}"/>
+                </p:selectOneListbox>
+
+
+                <h:outputLabel for="txtTiempo" styleClass="texto" value="Tiempo(Meses):"/>
+                <p:inputText id="txtTiempo" styleClass="input" value="#{registrarExperienciaColaboradorActionBean.tecnologiaComponente.tiempoTotal}"
+                style="width:80px;" maxlength="6" required="true" label="Tiempo" requiredMessage="Ingrese el tiempo de experiencia"
+                onkeypress="return ingresarNumSinCeroIni(event,this)"/>
+				
+			<p:commandButton id="btnGrabarEx" value="Agregar" update="panelExperiencia, tblExp, messages" actionListener="#{registrarExperienciaColaboradorActionBean.guadarExperiencia(registrarColaboradorActionBean.colaborador.id)}" process="@form"/>
+            </h:panelGrid>
+         
+              <p:dataTable id="tblExp" var="experiencia" align="center" emptyMessage="No se encontraron registros"
+                       columnClasses="columnTable" headerClass="headerTable"
+                        value="#{registrarExperienciaColaboradorActionBean.listaExperiencia}"
+                         paginator="true" rows="4">
+                <p:column headerText="Nro" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{experiencia.id}"/>
+                </p:column>
+                <p:column headerText="Lenguaje" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{experiencia.tecnologia.lenguaje.nombre}"/>
+                </p:column>
+                <p:column headerText="Tecnologia" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{experiencia.tecnologia.nombre}"/>
+                </p:column>
+                  <p:column headerText="Herramienta" styleClass="textoCabeceraTabla">
+                      <h:outputText value="#{experiencia.herramienta.nombre}"/>
+                  </p:column>
+                <p:column headerText="Tiempo" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{experiencia.tiempoTotal}"/>
+                </p:column>
+                <p:column headerText="">
+
+                <p:commandButton onclick="confirmationExperiencia.show()" icon="ui-icon-close"
+                                 title="Eliminar" actionListener="#{registrarExperienciaColaboradorActionBean.setSelectedIdExperiencia(experiencia.id)}" process="@this"/>
+
+             </p:column>
+            </p:dataTable>
+            <p:confirmDialog  widgetVar="confirmationExperiencia" message="Seguro que deseas eliminar esta experiencia?"
+                              header="Eliminando.. " severity="alert" appendToBody="true">
+                <p:commandButton value="Si" update=":formExperiencia:tblExp" oncomplete="confirmationExperiencia.hide()"
+                                 actionListener="#{registrarExperienciaColaboradorActionBean.delete}" process="@this"/>
+                <p:commandButton  value="No" onclick="confirmationExperiencia.hide()" type="button" />
+            </p:confirmDialog>
+        </h:form>
+        <p:ajax event="close" update=":form:panel,:panelbotones"/>
+    </p:dialog>
+</ui:composition>

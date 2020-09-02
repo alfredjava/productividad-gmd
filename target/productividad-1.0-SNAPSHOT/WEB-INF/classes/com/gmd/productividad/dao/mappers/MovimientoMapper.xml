@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gmd.productividad.dao.mappers.MovimientoMapper">
+
+    <resultMap id="movimientoResultMap" type="Movimiento">
+        <id property="id" column="ID_MOVIMIENTO"/>
+        <result property="accion" column="ACCION"/>
+        <result property="fecha" column="FE_ACCION"/>
+        <result property="estado" column="ST_REGISTRO"/>
+        <association property="asignacion" javaType="com.gmd.productividad.domain.AsignacionTrabajo" resultMap="com.gmd.productividad.dao.mappers.AsignacionTrabajoMapper.asignacionTrabajoResultMap"></association>
+    </resultMap>
+    <insert id="insert">
+         INSERT INTO MOVIMIENTO
+         (ID_MOVIMIENTO,
+         ID_ASIGNACION,
+         ACCION,
+         FE_ACCION,
+         ST_REGISTRO)
+         VALUES
+         (
+         SEQ_MOVIMIENTO.NEXTVAL,
+         #{asignacion.id},
+         #{accion},
+         #{fecha},
+         #{estado}
+         )
+    </insert>
+     <update id="deleteUltimoMovimiento">
+          UPDATE MOVIMIENTO SET ST_REGISTRO = '0'
+          WHERE ID_MOVIMIENTO=(SELECT max(O.id_movimiento) fROM MOVIMIENTO O WHERE O.ID_ASIGNACION = #{id} AND O.ST_REGISTRO='1')
+     </update>
+
+ <!-- <select id="selectById" resultMap="actividadColaboradorResultMap">
+     <![CDATA[
+         SELECT * FROM ACTIVIDAD_COLABORADOR WHERE id = ${hash}{id}
+     ]]>
+ </select>
+
+ <update id="update">
+     <![CDATA[
+         UPDATE ACTIVIDAD_COLABORADOR SET email = ${hash}{email}, password_hash = ${hash}{passwordHash} WHERE id = ${hash}{id}
+     ]]>
+ </update>
+
+ <delete id="delete">
+     <![CDATA[
+         DELETE FROM ACTIVIDAD_COLABORADOR WHERE id = ${hash}{id}
+     ]]>
+ </delete>
+
+ <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+     <![CDATA[
+         INSERT INTO ACTIVIDAD_COLABORADOR (ID_ACTV_COLA, ID_COLABORADOR, ID_PROYECTO, TI_ACTIVIDAD_FE_INICIO, FE_FIN,TO_TIEMPO) VALUES (${hash}{email}, ${hash}{passwordHash})
+     ]]>
+ </insert>-->
+
+</mapper>

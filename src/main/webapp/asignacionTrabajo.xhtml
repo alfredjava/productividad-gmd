@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition template="templates/main.xhtml" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+<ui:define name="content">
+<h:form id="form">
+    <p:messages id="messages" showDetail="true"  closable="true" />
+    <p:panel id="panel" header="Búsqueda Asignación de Trabajo">
+        <h:panelGrid columns="3">
+	        
+	     	<h:panelGrid columns="4">
+	
+		        <h:outputLabel for="txtUp" value="Up:"/>
+		        <p:inputText id="txtUp" value="#{consultarAsignacionesActionBean.asignacionTrabajo.up}"/>
+		        
+		        <h:outputLabel for="fechaIni" value="F. Inicio:"/>
+		        <p:calendar id="fechaIni" inputClass="calendar130" value="#{consultarAsignacionesActionBean.asignacionTrabajo.fechaInicio}" />
+		
+		        <h:outputLabel for="txtColaborador" value="Colaborador:"/>
+		        <p:inputText id="txtColaborador" value="#{consultarAsignacionesActionBean.nombre}"/>
+		        
+		        <h:outputLabel for="fechaFinEst" value="F. Fin Estimado:"/>
+		        <p:calendar value="#{consultarAsignacionesActionBean.asignacionTrabajo.fechaFinEstimada}" id="fechaFinEst"/>
+		        
+				 <h:outputLabel for="cmbTipoProc" value="Tipo Proceso:"/>
+		        <p:selectOneMenu value="#{consultarAsignacionesActionBean.asignacionTrabajo.tipoProceso}" id="cmbTipoProc" style="width:175px;">
+		            <f:selectItem itemLabel="-- Proceso --"/>
+		            <f:selectItems value="#{comboModelActionBean.listaTipoProceso}" var="tipo"
+		                           itemLabel="#{tipo.detalle}" itemValue="#{tipo.valor}"/>
+		        </p:selectOneMenu>
+		        
+				<h:outputLabel for="fechaReal" value="F. Real:" />
+		        <p:calendar value="#{consultarAsignacionesActionBean.asignacionTrabajo.fechaFinReal}" id="fechaReal" />
+		    </h:panelGrid>
+	    	<h:panelGrid columns="1">
+		        <h:outputLabel for="chkEstado" value="Estado:" />
+		        <p:selectManyMenu  id="chkEstado" styleClass="estadosSelect" value="#{consultarAsignacionesActionBean.estados}"  style="width:165px;" >
+		            <f:selectItems value="#{comboModelActionBean.listaEstadoAsignacion}" var="tipo" itemLabel="#{tipo.detalle}" itemValue="#{tipo.valor}"/>
+		        </p:selectManyMenu>
+	        </h:panelGrid>
+	        <h:panelGrid columns="1" >
+	        	<p:commandButton value="Buscar" id="btnBuscar"
+		                         actionListener="#{consultarAsignacionesActionBean.buscar}" styleClass="ui-priority-primary" update="tblAsignacionTrabajo messages" />
+		        <p:commandButton value="Limpiar" id="btnLimpiar"
+	                         actionListener="#{consultarAsignacionesActionBean.clean}" styleClass="ui-priority-primary" update="panel, messages tblAsignacionTrabajo" />
+	        </h:panelGrid>
+	        
+	    </h:panelGrid>
+</p:panel>
+
+
+    <p:dataTable id="tblAsignacionTrabajo" var="asignacion" emptyMessage="No se encontraron registros"
+                 value="#{consultarAsignacionesActionBean.asignacionTrabajoList}"
+                 paginator="true" rows="5" 
+                 columnClasses="columnTable" headerClass="headerTable">
+        <p:column headerText="Nro" styleClass="textoCabeceraTabla" style="height:22px">
+            <h:outputText value="#{asignacion.id}"/>
+        </p:column>
+
+        <p:column headerText="Colaborador" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.colaborador.nombres} #{asignacion.colaborador.apellidoPaterno} #{asignacion.colaborador.apellidoMaterno}"/>
+        </p:column>
+        <p:column headerText="Lenguaje" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.tecnologia.lenguaje.nombre}"/>
+        </p:column>
+        <p:column headerText="Tecnologia" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.tecnologia.nombre}"/>
+        </p:column>
+        <p:column headerText="Herramienta" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.herramienta.nombre}"/>
+        </p:column>
+        <p:column headerText="Componente" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.componente.nombre}"/>
+        </p:column>
+        <p:column headerText="Complejidad" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{comboModelActionBean.getIndicadorComplejidad(asignacion.indicadorComplejidad).detalle}"/>
+        </p:column>
+        <p:column headerText="Tipo Proceso" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{comboModelActionBean.getTipoProceso(asignacion.tipoProceso).detalle}"/>
+        </p:column>
+        <p:column headerText="Tipo Tarea" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{comboModelActionBean.getTipoTarea(asignacion.tipoTarea).detalle}"/>
+        </p:column>
+        <p:column headerText="Estado" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{comboModelActionBean.getEstadoSegunMovimiento(asignacion.ultimoMovimiento).detalle}"/>
+        </p:column>
+        <p:column headerText="F. Inicio" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.fechaInicio}">
+            <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="F. Fin Estimada" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.fechaFinEstimada}">
+            <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="F. Real" styleClass="textoCabeceraTabla">
+            <h:outputText value="#{asignacion.fechaFinReal}">
+            <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Accion" styleClass="textoCabeceraTabla">
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'tomar')}"
+                             icon="ui-icon-arrowthickstop-1-s" onclick="confirmationAsignacion.show()"
+                             title="Tomar" rendered="#{movimientosAsignacionesActionBean.isAsignacionPorTomar(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_COLABORADOR')}" />
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'tomarAjuste')}"
+                              icon="ui-icon-arrowthickstop-1-s" onclick="confirmationAsignacion.show()"
+                             title="Tomar ajuste" rendered="#{movimientosAsignacionesActionBean.isAjustePorTomar(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_COLABORADOR')}"/>
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'tomarRetrabajo')}"
+            				 icon="ui-icon-arrowthickstop-1-s" onclick="confirmationAsignacion.show()"
+                             title="Tomar retrabajo" rendered="#{movimientosAsignacionesActionBean.isRetrabajoPorTomar(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_COLABORADOR')}"/>
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'finalizarDesarrollo')}"
+                             icon="ui-icon-arrowthick-1-n" onclick="confirmationAsignacion.show()"
+                             title="Finalizar Desarrollo" rendered="#{movimientosAsignacionesActionBean.isPorFinalizarDesarrollo(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_COLABORADOR')}"/>
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'finalizarUP')}"
+                             icon="ui-icon-check" onclick="confirmationAsignacion.show()"
+                             title="Finalizar UP" rendered="#{movimientosAsignacionesActionBean.isPorRevisar(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_SUPERVISOR')}"/>
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'retrabajo')}"
+                             icon="ui-icon-arrowrefresh-1-w" onclick="confirmationAsignacion.show()"
+                             title="Retrabajo" rendered="#{movimientosAsignacionesActionBean.isPorRevisar(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_SUPERVISOR')}"/>
+
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'ajuste')}"
+                             icon="ui-icon-transferthick-e-w" onclick="confirmationAsignacion.show()"
+                             title="Ajuste" rendered="#{movimientosAsignacionesActionBean.isPorRevisar(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_SUPERVISOR')}"/>
+
+            <p:commandButton actionListener="#{movimientosAsignacionesActionBean.setAccion(asignacion.id,'delete')}"
+                             icon="ui-icon-arrowreturnthick-1-s" onclick="confirmationAsignacion.show()"
+                             title="Eliminar Ultimo movimiento" rendered="#{movimientosAsignacionesActionBean.permiteDeshacer(asignacion.ultimoMovimiento) and request.isUserInRole('ROL_SUPERVISOR')}"/>
+        </p:column>
+    </p:dataTable>
+    <p:confirmDialog widgetVar="confirmationAsignacion" message="Seguro que deseas cambiar de estado?"
+                              header="Cambiando de estado.. " severity="alert"  appendToBody="true">
+        <p:commandButton value="Si" update="tblAsignacionTrabajo :form:messages" oncomplete="confirmationAsignacion.hide()"
+                          process="@this" actionListener="#{movimientosAsignacionesActionBean.cambiarEstado()}" action="#{consultarAsignacionesActionBean.buscar}" />
+        <p:commandButton  value="No" onclick="confirmationAsignacion.hide()" type="button" />
+    </p:confirmDialog>
+
+</h:form>
+</ui:define>
+</ui:composition>  

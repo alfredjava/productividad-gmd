@@ -1,0 +1,50 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                    http://www.springframework.org/schema/security
+                    http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+    <http use-expressions="true" >
+		<access-denied-handler ref="accessDeniedHandler"/>
+        <intercept-url
+                pattern="/login.jsf" access="permitAll" />
+
+        <intercept-url pattern="/static/**" access="permitAll" />
+        <intercept-url pattern="/javax.faces.resource/**" access="permitAll" />
+
+
+        <intercept-url pattern="/asignacionTrabajo.jsf"
+                        access="hasRole ( 'ROL_COLABORADOR' ) or hasRole ( 'ROL_SUPERVISOR' )" />
+        <intercept-url pattern="/consultaExperiencia.jsf"
+                        access="hasRole ( 'ROL_COLABORADOR' ) or hasRole ( 'ROL_SUPERVISOR' )" />
+        <intercept-url pattern="/asignacionTrabajo.jsf"
+                        access="hasRole ( 'ROL_COLABORADOR' ) or hasRole ( 'ROL_SUPERVISOR' )" />
+        <intercept-url pattern="/**"
+                       access="hasRole ( 'ROL_COLABORADOR' ) or hasRole ( 'ROL_SUPERVISOR' )" />
+
+        <intercept-url
+                pattern="/**" />
+            <form-login
+                    login-processing-url="/j_spring_security_check"
+                    login-page="/login.jsf"
+                    default-target-url="/index.jsf"
+                    authentication-failure-url="/login.jsf"/>
+
+        <logout/>
+    </http>
+
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider user-service-ref="userSecurityService">
+            <password-encoder hash="sha"/>
+        </authentication-provider>
+    </authentication-manager>
+    <global-method-security secured-annotations="enabled"/>
+</beans:beans>
+
+
+
+
+
+

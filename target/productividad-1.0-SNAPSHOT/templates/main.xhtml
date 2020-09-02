@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css"
+          href="${request.contextPath}/static/css/custom-style.css" title="Style"/>
+    <script type="text/javascript"
+	src="${request.contextPath}/static/script/util.js"></script>
+    <title>Productividad</title>
+    <style>.header div{    background:#0088cc; color: #fff;}
+    </style>
+</h:head>
+<h:body>
+    <p:layout fullPage="true">
+        <!--Header-->
+        <p:layoutUnit position="north" size="100" styleClass="header">
+        	<h1 style="text-align:center; ">Sistema de Control de Productividad</h1>
+            <strong>Hola <p:commandLink  value="#{loginActionBean.username}" action="#{tabMenu.profile}"/>!</strong> | <p:commandLink action="#{loginActionBean.logout}">Salir</p:commandLink>
+        </p:layoutUnit>
+        
+        <!--Menu-->
+        <p:layoutUnit position="west" size="230" header="Productividad" resizable="true" closable="true"
+                      collapsible="true">
+            <h:form id="demo">
+                <p:panelMenu  styleClass="ui-panel-titlebar">
+                    <p:submenu label="Modulo Colaborador">
+                        <p:menuitem value="Registrar Colaborador" url="/index.jsf" icon="ui-icon-disk" onclick="#{registrarColaboradorActionBean.clean()}" update="form:panel,form:panelbotones" rendered="#{request.isUserInRole('ROL_SUPERVISOR')}"/>
+                        <p:menuitem value="Consulta Colaborador" url="/consultaColaborador.jsf" icon="ui-icon-disk" update="formConsulta:panelConsulta,formConsulta:tblConsultaColaborador"  rendered="#{request.isUserInRole('ROL_SUPERVISOR')}" onclick="#{consultaColaboradorActionBean.colaboradores()}"/>
+                        <p:menuitem value="Busqueda Experiencia" url="/consultaExperiencia.jsf" icon="ui-icon-disk" onclick="#{consultaExperienciaActionBean.clean()}" rendered="#{request.isUserInRole('ROL_SUPERVISOR')}"/>
+                    </p:submenu>
+
+                    <p:separator/>
+                    <p:submenu label="Modulo Asignacion">                        
+                        <p:menuitem value="Asignacion de Trabajo" url="/asignacionTrabajo.jsf" icon="ui-icon-disk" />                        
+                    </p:submenu>
+                </p:panelMenu>
+            </h:form>
+        </p:layoutUnit>
+        <!--Contenido-->
+        <p:layoutUnit position="center">
+            <ui:insert name="content">Default content</ui:insert>
+        </p:layoutUnit>
+        <!--Pie de pagina-->        
+            <h:outputText value="..:: GMD ©Copyright -Todos los Derechos Reservados ::.." style ="font-size: 11px"/>
+   </p:layout>
+</h:body>
+</html>  

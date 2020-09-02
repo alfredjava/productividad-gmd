@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gmd.productividad.dao.mappers.ParametroMapper">
+
+	<resultMap id="parametroResultMap" type="Parametro">
+		<id property="id" column="id" />
+		<result property="tipo" column="TI_PARAMETRO" />
+		<result property="valor" column="VL_PARAMETRO" />
+		<result property="detalle" column="TX_DETALLE" />
+	</resultMap>
+    <select id="selectById" resultMap="parametroResultMap">
+            SELECT * FROM PARAMETRO WHERE ID_PARAMETRO = #{id} ORDER BY TX_DETALLE ASC
+    </select>
+    <select id="findByTipo" resultMap="parametroResultMap">
+            SELECT * FROM PARAMETRO WHERE TI_PARAMETRO = #{tipo} ORDER BY TX_DETALLE ASC
+    </select>
+    <select id="findByTipoAndValor" resultMap="parametroResultMap">
+            SELECT * FROM PARAMETRO WHERE TI_PARAMETRO = #{0} AND VL_PARAMETRO = #{1} ORDER BY TX_DETALLE ASC
+    </select>
+    <!--
+    <update id="update">
+        <![CDATA[
+            UPDATE ACTIVIDAD_COLABORADOR SET email = ${hash}{email}, password_hash = ${hash}{passwordHash} WHERE id = ${hash}{id}
+        ]]>
+    </update>
+
+    <delete id="delete">
+        <![CDATA[
+            DELETE FROM ACTIVIDAD_COLABORADOR WHERE id = ${hash}{id}
+        ]]>
+    </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        <![CDATA[
+            INSERT INTO ACTIVIDAD_COLABORADOR (ID_ACTV_COLA, ID_COLABORADOR, ID_PROYECTO, TI_ACTIVIDAD_FE_INICIO, FE_FIN,TO_TIEMPO) VALUES (${hash}{email}, ${hash}{passwordHash})
+        ]]>
+    </insert>-->
+
+</mapper>

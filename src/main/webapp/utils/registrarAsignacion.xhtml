@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <p:dialog header="Asignacion Trabajo" widgetVar="dlgTrabajo" resizable="false" modal="true" appendToBody="true">
+        <h:form id="formTrabajo">
+            <p:messages id="messages" showDetail="true" showSummary="false" autoUpdate="true" closable="true" />
+            <h:panelGrid columns="6" id="panelTrabajo">
+                <h:outputText value="Lenguaje *"/>
+                <h:outputText value="Tecnología *"/>
+                <h:outputText value="Herramienta *"/>
+                <h:outputText value="Componente * "/>
+                <h:outputText value=" "/>
+                <h:outputText value=" "/>
+
+                <p:selectOneListbox id="lenguaje" value="#{registrarAsignacionActionBean.idLenguaje}" style="height:200px;" required="true" requiredMessage="Seleccione un lenguaje">
+                    <f:selectItems value="#{comboModelActionBean.listaLenguaje}" var="lenguaje"
+                                   itemLabel="#{lenguaje.nombre}" itemValue="#{lenguaje.id}"/>
+                    <p:ajax event="change" update="tecnologia" process="@this" />
+                </p:selectOneListbox>
+                <p:selectOneListbox id="tecnologia" value="#{registrarAsignacionActionBean.asignacionTrabajo.tecnologia.id}" style="height:200px;" required="true" requiredMessage="Seleccione una tecnologia">
+                    <f:selectItems id="tecnologiaValues" value="#{comboModelActionBean.getListaTecnologia(registrarAsignacionActionBean.idLenguaje)}" var="tecnologia"
+                                   itemLabel="#{tecnologia.nombre}" itemValue="#{tecnologia.id}"/>
+                </p:selectOneListbox>
+                <p:selectOneListbox id="herramienta" value="#{registrarAsignacionActionBean.asignacionTrabajo.herramienta.id}"
+                                    style="height:200px;" required="true" requiredMessage="Seleccione una herramienta">
+                    <f:selectItems value="#{comboModelActionBean.listaHerramienta}" var="herramienta"
+                                   itemLabel="#{herramienta.nombre}" itemValue="#{herramienta.id}"/>
+                </p:selectOneListbox>
+
+                <p:selectOneListbox id="componente" value="#{registrarAsignacionActionBean.asignacionTrabajo.componente.id}" style="height:200px;" required="true" requiredMessage="Seleccione un componente">
+                    <f:selectItems value="#{comboModelActionBean.listaComponente}" var="componente"
+                                   itemLabel="#{componente.nombre}" itemValue="#{componente.id}"/>
+                </p:selectOneListbox>
+                <h:panelGrid columns="2">
+                    <h:outputLabel for="txtUp" value="UP:"/>
+                    <p:inputText value="#{registrarAsignacionActionBean.asignacionTrabajo.up}" id="txtUp" required="true" requiredMessage="Ingrese UP" />
+
+                    <h:outputLabel for="cmbComplejidad" value="Complejidad: *"/>
+                    <p:selectOneMenu value="#{registrarAsignacionActionBean.asignacionTrabajo.indicadorComplejidad}" id="cmbComplejidad" style="width:165px;">
+                   
+                        <f:selectItems value="#{comboModelActionBean.listaComplejidad}" var="complejidad"
+                                       itemLabel="#{complejidad.detalle}" itemValue="#{complejidad.valor}"/>
+                    </p:selectOneMenu>
+                    <h:outputLabel for="cmbProceso" value="Proceso: *"/>
+                    <p:selectOneMenu value="#{registrarAsignacionActionBean.asignacionTrabajo.tipoProceso}" id="cmbProceso" style="width:165px;">
+                   
+                        <f:selectItems value="#{comboModelActionBean.listaTipoProceso}" var="tipoProceso"
+                                       itemLabel="#{tipoProceso.detalle}" itemValue="#{tipoProceso.valor}"/>
+                    </p:selectOneMenu>
+                    <h:outputLabel for="cmbTipoTarea" value="Tipo Tarea: *"/>
+                    <p:selectOneMenu value="#{registrarAsignacionActionBean.asignacionTrabajo.tipoTarea}" id="cmbTipoTarea" style="width:165px;">
+                   
+                        <f:selectItems value="#{comboModelActionBean.listaTipoTarea}" var="tipoTarea"
+                                       itemLabel="#{tipoTarea.detalle}" itemValue="#{tipoTarea.valor}"/>
+                    </p:selectOneMenu>
+
+                    <h:outputLabel for="fechaInicioTrabajo" value="F. Inicio:"/>
+                    <p:calendar value="#{registrarAsignacionActionBean.asignacionTrabajo.fechaInicio}" id="fechaInicioTrabajo" maxdate="#{registrarAsignacionActionBean.asignacionTrabajo.fechaFinEstimada}"  required="true" requiredMessage="Ingrese fecha Inicio Estimada">
+                        <p:ajax event="dateSelect" listener="#{registrarAsignacionActionBean.updateHorasEstimadas}" update="txtHoras, fechaFinEstimada" />
+                    </p:calendar>
+
+                    <h:outputLabel for="fechaFinEstimada" value="F. Fin Estimado:"/>
+                        <p:calendar value="#{registrarAsignacionActionBean.asignacionTrabajo.fechaFinEstimada}" id="fechaFinEstimada" mindate="#{registrarAsignacionActionBean.asignacionTrabajo.fechaInicio}" required="true" requiredMessage="Ingrese fecha Fin Estimada">
+                            <p:ajax event="dateSelect" listener="#{registrarAsignacionActionBean.updateHorasEstimadas}" update="txtHoras, fechaInicioTrabajo" />
+                        </p:calendar>
+
+                    <h:outputLabel for="txtHoras" value="Horas:"/>
+                    <p:inputText value="#{registrarAsignacionActionBean.asignacionTrabajo.horasEstimadas}" id="txtHoras" readonly="true"/>
+
+                </h:panelGrid>
+            </h:panelGrid>
+            <div style="text-align: right">
+            <p:commandButton id="btnGrabarEx" value="Grabar" update="tblAsignacionColaborador, panelTrabajo, messages" process="@form" actionListener="#{registrarAsignacionActionBean.asignar(registrarColaboradorActionBean.colaborador.id)}" />
+            <p:commandButton id="btnSalirEx" value="Cerrar" oncomplete="dlgTrabajo.hide();" />
+            </div>
+            <p:dataTable id="tblAsignacionColaborador" var="asignacion" emptyMessage="No se encontraron registros"
+                         value="#{registrarAsignacionActionBean.asignaciones}"
+                         paginator="true" rows="5"
+                         columnClasses="columnTable" headerClass="headerTable">
+                <p:column headerText="Nro" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.id}"/>
+                </p:column>
+
+                <p:column headerText="Colaborador" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.colaborador.nombres} #{asignacion.colaborador.apellidoPaterno} #{asignacion.colaborador.apellidoMaterno}"/>
+                </p:column>
+                <p:column headerText="Lenguaje" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.tecnologia.lenguaje.nombre}"/>
+                </p:column>
+
+                <p:column headerText="Tecnologia" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.tecnologia.nombre}"/>
+                </p:column>
+                <p:column headerText="Herramienta" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.herramienta.nombre}"/>
+                </p:column>
+                <p:column headerText="Componente" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.componente.nombre}"/>
+                </p:column>
+                <p:column headerText="Complejidad" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{comboModelActionBean.getIndicadorComplejidad(asignacion.indicadorComplejidad).detalle}"/>
+                </p:column>
+                <p:column headerText="Tipo Proceso" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{comboModelActionBean.getTipoProceso(asignacion.tipoProceso).detalle}"/>
+                </p:column>
+                <p:column headerText="Tipo Tarea" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{comboModelActionBean.getTipoTarea(asignacion.tipoTarea).detalle}"/>
+                </p:column>
+                <p:column headerText="Estado" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{comboModelActionBean.getEstadoSegunMovimiento(asignacion.ultimoMovimiento).detalle}"/>
+                </p:column>
+                <p:column headerText="F. Inicio" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.fechaInicio}">
+                        <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="F. Fin Estimado" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.fechaFinEstimada}">
+                        <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="F. Real" styleClass="textoCabeceraTabla">
+                    <h:outputText value="#{asignacion.fechaFinReal}">
+                        <f:converter converterId="com.gmd.productividad.util.ConverterFecha"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Accion" styleClass="textoCabeceraTabla">
+                    <p:commandButton actionListener="#{registrarAsignacionActionBean.setSelectedId(asignacion.id)}" onclick="confirmationAsignacion.show()" icon="ui-icon-close"
+                                     title="Eliminar" process="@this" />
+                </p:column>
+            </p:dataTable>
+            <p:confirmDialog widgetVar="confirmationAsignacion" message="Seguro que deseas eliminar?"
+                              header="Eliminando.. " severity="alert"  appendToBody="true">
+                <p:commandButton value="Si" update="tblAsignacionColaborador, messages" oncomplete="confirmationAsignacion.hide()"
+                                  process="@this" actionListener="#{registrarAsignacionActionBean.delete()}"/>
+                <p:commandButton  value="No" onclick="confirmationAsignacion.hide()" type="button" />
+            </p:confirmDialog>
+        </h:form>
+
+    </p:dialog>
+</ui:composition>

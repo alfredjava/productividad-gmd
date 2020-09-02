@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+
+    <p:dialog header="Registro Colaborador" widgetVar="dlg"  resizable="false" hideEffect="clip" modal="true" appendToBody="true"  >
+        <h:form id="formAddColaborador">
+                <p:messages id="messages" showDetail="true" closable="true"/>
+			    <h:panelGrid columns="4" style="margin-bottom:10px"  styleClass="ui-panel-titlebar" id="panelGridAddCol">
+				<h:outputLabel for="cmbTipoDoc" styleClass="texto" value="Tipo Doc:"/>
+			  	<p:selectOneMenu id="cmbTipoDoc" value="#{registrarColaboradorActionBean.colaborador.tipoDocumento}" style="width:175px;"
+                                     immediate="true" disabled="true" required="true">
+                        <f:selectItems value="#{comboModelActionBean.listaTipoDocumento}" var="cmbTipoDoc"
+                                       itemLabel="#{cmbTipoDoc.detalle}" itemValue="#{cmbTipoDoc.valor}"/>
+                </p:selectOneMenu>
+                <h:outputLabel for="txtNumDoc" styleClass="texto" value="Número: *"/>
+                <p:inputText id="txtNumDoc" styleClass="input"  required="true" requiredMessage="Ingrese numero de documento"
+                             value="#{registrarColaboradorActionBean.colaborador.numeroDocumento}" disabled="true"/>
+                <h:outputLabel for="txtnombres" styleClass="texto" value="Nombres:"/>
+                <p:inputText id="txtnombres" styleClass="input" value="#{registrarColaboradorActionBean.colaborador.nombres}"
+                			required="true" requiredMessage="Ingrese nombre(s)"  onkeyup="conMayusculas(this)" onkeypress="return validarSoloLetras(event)"/>
+                <h:outputLabel for="txtapPaterno" styleClass="texto" value="Apellido Paterno:"/>
+                <p:inputText id="txtapPaterno" styleClass="input" required="true" requiredMessage="Ingrese apellido paterno"
+                             value="#{registrarColaboradorActionBean.colaborador.apellidoPaterno}"  onkeyup="conMayusculas(this)" onkeypress="return validarSoloLetras(event)"/>
+                <h:outputLabel for="txtapMaterno" styleClass="texto" value="Apellido Materno:"/>
+                <p:inputText id="txtapMaterno" styleClass="input" required="true" requiredMessage="Ingrese apellido materno"
+                             value="#{registrarColaboradorActionBean.colaborador.apellidoMaterno}"  onkeyup="conMayusculas(this)" onkeypress="return validarSoloLetras(event)"/>
+                    <h:outputLabel for="txtUsuario" styleClass="texto" value="Usuario:"/>
+                    <p:inputText id="txtUsuario" styleClass="input" required="true" requiredMessage="Ingrese el nombre de usuario"
+                                 value="#{registrarColaboradorActionBean.colaborador.usuario}" onkeypress="return validarSoloLetras(event)"/>
+                    <h:outputLabel for="txtPassword" styleClass="texto" value="Contraseña:"/>
+                    <p:password id="txtPassword" styleClass="input" required="true" requiredMessage="Ingrese password a usar"
+                                 value="#{registrarColaboradorActionBean.colaborador.password}"  onkeyup="conMayusculas(this)" />
+                 <p:commandButton value="Guardar" actionListener="#{registrarColaboradorActionBean.agregarColaborador}" oncomplete="if (!args.validationFailed) dlg.hide() "
+                 update="panelGridAddCol, messages"/>
+            </h:panelGrid>
+                               
+        </h:form>
+        
+        <p:ajax event="close" update=":form:panel, :panelbotones"  />
+	    </p:dialog>
+</ui:composition>

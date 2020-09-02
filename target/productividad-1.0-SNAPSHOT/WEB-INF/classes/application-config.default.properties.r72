@@ -1,0 +1,14 @@
+db.driver=oracle.jdbc.driver.OracleDriver
+db.url=jdbc:oracle:thin:@10.252.2.42:1521/DEV
+db.user=PRODUCTIVIDAD
+db.password=PRODUCTIVIDAD
+db.initialize=false
+
+#db.driver=com.mysql.jdbc.Driver
+#db.url=jdbc:mysql://localhost:3306/productividad
+#db.user=root
+#db.password=mysql
+#db.initialize=false
+
+
+

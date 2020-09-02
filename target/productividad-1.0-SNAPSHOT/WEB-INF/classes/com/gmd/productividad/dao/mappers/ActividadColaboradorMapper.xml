@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.gmd.productividad.dao.mappers.ActividadColaboradorMapper">
+    <!--    result maps     -->
+    <resultMap id="actividadColaboradorResultMap" type="com.gmd.productividad.domain.ActividadColaborador">
+        <id property="id" column="ID_ACTV_COLA" jdbcType="INTEGER"/>
+        <result property="tipoActividad" column="TI_ACTIVIDAD"/>
+        <result property="fechaInicio" column="FE_INICIO"/>
+        <result property="fechaFin" column="FE_FIN"/>
+        <result property="tiempoTotal" column="TO_TIEMPO"/>
+
+        <!--        one to one     -->
+        <association property="proyecto" javaType="com.gmd.productividad.domain.Proyecto"
+                     resultMap="com.gmd.productividad.dao.mappers.ProyectoMapper.proyectoResultMap"/>
+        <association property="colaborador" javaType="com.gmd.productividad.domain.Colaborador"
+                     resultMap="com.gmd.productividad.dao.mappers.ColaboradorMapper.colaboradorResultMap"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="actividadColaboradorResultMap">
+			SELECT * FROM ACTIVIDAD_COLABORADOR
+	</select>
+
+    <select id="selectById" resultMap="actividadColaboradorResultMap">
+      SELECT * FROM ACTIVIDAD_COLABORADOR WHERE ID_ACTV_COLA = #{id}
+    </select>
+
+    <select id="findByColaborador" resultMap="actividadColaboradorResultMap">
+			SELECT * FROM ACTIVIDAD_COLABORADOR
+			WHERE ID_COLABORADOR= #{id}
+	</select>
+
+    <insert id="insert">
+        <selectKey keyProperty="id" resultType="long" order="BEFORE">
+            SELECT SEQ_ACTIVIDAD_COLABORADOR.NEXTVAL FROM DUAL
+        </selectKey>
+      INSERT INTO ACTIVIDAD_COLABORADOR
+		(ID_ACTV_COLA,
+		ID_COLABORADOR,
+		ID_PROYECTO,
+		TI_ACTIVIDAD,
+		FE_INICIO,
+		FE_FIN,
+        TO_TIEMPO)
+	  VALUES (#{id,jdbcType=INTEGER},
+	    #{colaborador.id,jdbcType=INTEGER},
+		#{proyecto.id,jdbcType=INTEGER},
+		#{tipoActividad,jdbcType=VARCHAR},
+		#{fechaInicio,jdbcType=DATE},
+		#{fechaFin,jdbcType=DATE},
+        #{tiempoTotal,jdbcType=INTEGER})
+	</insert>
+
+    <update id="update">
+		UPDATE ACTIVIDAD_COLABORADOR 
+		SET ID_PROYECTO =  #{proyecto.id,jdbcType=INTEGER},
+		 TI_ACTIVIDAD = #{tipoActividad,jdbcType=VARCHAR},
+		 FE_INICIO = #{fechaInicio,jdbcType=DATE},
+		 FE_FIN = #{fechaFin,jdbcType=DATE},
+		 TO_TIEMPO = #{tiempoTotal,jdbcType=INTEGER}
+		 WHERE ID_ACTV_COLA = #{id,jdbcType=INTEGER}
+	</update>
+
+    <delete id="delete">
+          DELETE FROM ACTIVIDAD_COLABORADOR WHERE ID = #{id}
+     </delete>
+
+</mapper>
